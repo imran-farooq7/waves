@@ -10,7 +10,7 @@ const Home = () => {
 	return (
 		<div>
 			<Song currentSong={currentSong} />
-			<Player />
+			<Player currentSong={currentSong} />
 		</div>
 	);
 };
