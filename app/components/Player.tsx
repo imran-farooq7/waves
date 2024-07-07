@@ -1,6 +1,6 @@
 "use client";
-import { useRef } from "react";
-import { FaAngleLeft, FaAngleRight, FaPlay } from "react-icons/fa6";
+import { Dispatch, SetStateAction, useRef } from "react";
+import { FaAngleLeft, FaAngleRight, FaPause, FaPlay } from "react-icons/fa6";
 interface Props {
 	currentSong: {
 		name: string;
@@ -11,12 +11,20 @@ interface Props {
 		id: string;
 		active: boolean;
 	};
+	setIsPlaying: Dispatch<SetStateAction<boolean>>;
+	isPlaying: boolean;
 }
 
-const Player = ({ currentSong }: Props) => {
+const Player = ({ currentSong, isPlaying, setIsPlaying }: Props) => {
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const playSongHandler = () => {
-		console.log(audioRef.current?.play());
+		if (isPlaying) {
+			audioRef.current?.pause();
+			setIsPlaying((prevState) => !prevState);
+		} else {
+			audioRef.current?.play();
+			setIsPlaying((prevState) => !prevState);
+		}
 	};
 	return (
 		<div className="player">
@@ -27,7 +35,11 @@ const Player = ({ currentSong }: Props) => {
 			</div>
 			<div className="player-control">
 				<FaAngleLeft size={"32"} />
-				<FaPlay size={"32"} onClick={playSongHandler} />
+				{isPlaying ? (
+					<FaPause size={"32"} onClick={playSongHandler} />
+				) : (
+					<FaPlay size={"32"} onClick={playSongHandler} />
+				)}
 				<FaAngleRight size={"32"} />
 			</div>
 			<audio src={currentSong.audio} ref={audioRef}></audio>
