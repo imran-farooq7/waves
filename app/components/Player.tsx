@@ -1,5 +1,6 @@
 "use client";
 import {
+	ChangeEvent,
 	Dispatch,
 	SetStateAction,
 	SyntheticEvent,
@@ -23,9 +24,9 @@ interface Props {
 
 const Player = ({ currentSong, isPlaying, setIsPlaying }: Props) => {
 	const [songInfo, setSongInfo] = useState<{
-		currentTime: number | null;
-		duration: number | null;
-	}>({ currentTime: null, duration: null });
+		currentTime: number;
+		duration: number;
+	}>({ currentTime: 0, duration: 0 });
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const playSongHandler = () => {
 		if (isPlaying) {
@@ -46,11 +47,23 @@ const Player = ({ currentSong, isPlaying, setIsPlaying }: Props) => {
 			Math.floor(time / 60) + ":" + ("0" + Math.floor(time % 60)).slice(-2)
 		);
 	};
+	const dragPlayer = (e: ChangeEvent<HTMLInputElement>) => {
+		if (audioRef.current) {
+			audioRef.current.currentTime = Number(e.target.value);
+		}
+		setSongInfo({ ...songInfo, currentTime: Number(e.target.value) });
+	};
 	return (
 		<div className="player">
 			<div className="time-control">
 				<p>{getTime(songInfo.currentTime!)}</p>
-				<input type="range" />
+				<input
+					type="range"
+					min={0}
+					max={songInfo.duration!}
+					value={songInfo.currentTime!}
+					onChange={dragPlayer}
+				/>
 				<p>{getTime(songInfo.duration!)}</p>
 			</div>
 			<div className="player-control">
@@ -67,7 +80,7 @@ const Player = ({ currentSong, isPlaying, setIsPlaying }: Props) => {
 				onLoadedMetadata={handleSongTimeUpdate}
 				src={currentSong.audio}
 				ref={audioRef}
-			></audio>
+			/>
 		</div>
 	);
 };
