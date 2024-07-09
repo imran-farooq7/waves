@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, RefObject, SetStateAction } from "react";
 
 interface Props {
 	song: {
@@ -30,11 +30,26 @@ interface Props {
 		id: string;
 		active: boolean;
 	}[];
+	songRef: RefObject<HTMLAudioElement> | undefined;
+	setIsPlaying: Dispatch<SetStateAction<boolean>>;
 }
-const LibrarySong = ({ song, setCurrentSong, songs }: Props) => {
+const LibrarySong = ({
+	song,
+	setCurrentSong,
+	songs,
+	songRef,
+	setIsPlaying,
+}: Props) => {
 	const handleSelectedSong = (id: string) => {
 		const selectedSong = songs.filter((s) => s.id === id);
 		setCurrentSong({ ...selectedSong[0] });
+		const playPromise = songRef?.current?.play();
+		if (playPromise !== undefined) {
+			playPromise.then((audio) => {
+				songRef?.current?.play();
+				setIsPlaying(true);
+			});
+		}
 	};
 	return (
 		<div className="library-song" onClick={() => handleSelectedSong(song.id)}>

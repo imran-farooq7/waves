@@ -2,6 +2,7 @@
 import {
 	ChangeEvent,
 	Dispatch,
+	RefObject,
 	SetStateAction,
 	SyntheticEvent,
 	useRef,
@@ -20,14 +21,21 @@ interface Props {
 	};
 	setIsPlaying: Dispatch<SetStateAction<boolean>>;
 	isPlaying: boolean;
+	setSongRef: Dispatch<SetStateAction<RefObject<HTMLAudioElement> | undefined>>;
 }
 
-const Player = ({ currentSong, isPlaying, setIsPlaying }: Props) => {
+const Player = ({
+	currentSong,
+	isPlaying,
+	setIsPlaying,
+	setSongRef,
+}: Props) => {
 	const [songInfo, setSongInfo] = useState<{
 		currentTime: number;
 		duration: number;
 	}>({ currentTime: 0, duration: 0 });
 	const audioRef = useRef<HTMLAudioElement>(null);
+	setSongRef(audioRef);
 	const playSongHandler = () => {
 		if (isPlaying) {
 			audioRef.current?.pause();

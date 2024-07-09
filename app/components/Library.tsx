@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, RefObject, SetStateAction } from "react";
 import LibrarySong from "./LibrarySong";
 interface Props {
 	songs: {
@@ -21,9 +21,11 @@ interface Props {
 			active: boolean;
 		}>
 	>;
+	songRef: RefObject<HTMLAudioElement> | undefined;
+	setIsPlaying: Dispatch<SetStateAction<boolean>>;
 }
 
-const Library = ({ songs, setCurrentSong }: Props) => {
+const Library = ({ songs, setCurrentSong, songRef, setIsPlaying }: Props) => {
 	return (
 		<div className="library">
 			<h2>Library</h2>
@@ -33,6 +35,8 @@ const Library = ({ songs, setCurrentSong }: Props) => {
 						song={song}
 						setCurrentSong={setCurrentSong}
 						songs={songs}
+						songRef={songRef}
+						setIsPlaying={setIsPlaying}
 					/>
 				))}
 			</div>
