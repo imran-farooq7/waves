@@ -20,6 +20,8 @@ const Home = () => {
 				isPlaying={isPlaying}
 				setIsPlaying={setIsPlaying}
 				setSongRef={setSongRef}
+				songs={songs}
+				setCurrentSong={setCurrentSong}
 			/>
 			<Library
 				songs={songs}

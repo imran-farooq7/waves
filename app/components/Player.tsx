@@ -22,6 +22,26 @@ interface Props {
 	setIsPlaying: Dispatch<SetStateAction<boolean>>;
 	isPlaying: boolean;
 	setSongRef: Dispatch<SetStateAction<RefObject<HTMLAudioElement> | undefined>>;
+	songs: {
+		name: string;
+		cover: string;
+		artist: string;
+		audio: string;
+		color: string[];
+		id: string;
+		active: boolean;
+	}[];
+	setCurrentSong: Dispatch<
+		SetStateAction<{
+			name: string;
+			cover: string;
+			artist: string;
+			audio: string;
+			color: string[];
+			id: string;
+			active: boolean;
+		}>
+	>;
 }
 
 const Player = ({
@@ -29,6 +49,8 @@ const Player = ({
 	isPlaying,
 	setIsPlaying,
 	setSongRef,
+	songs,
+	setCurrentSong,
 }: Props) => {
 	const [songInfo, setSongInfo] = useState<{
 		currentTime: number;
@@ -61,6 +83,47 @@ const Player = ({
 		}
 		setSongInfo({ ...songInfo, currentTime: Number(e.target.value) });
 	};
+	const songSkipHandler = (direction: string) => {
+		const currentIndex = songs.findIndex((song) => song.id === currentSong.id);
+		if (direction === "skip-next") {
+			setCurrentSong(songs[(currentIndex + 1) % songs.length]);
+			const newSongs = songs.map((song) => {
+				if (song.id === currentSong.id) {
+					return {
+						...song,
+						active: true,
+					};
+				} else {
+					return {
+						...song,
+						active: false,
+					};
+				}
+			});
+			if (isPlaying) {
+				const promiseSong = audioRef.current?.play();
+				if (promiseSong !== undefined) {
+					promiseSong.then((audio) => {
+						audioRef.current?.play();
+					});
+				}
+			}
+		} else {
+			if ([(currentIndex - 1) % songs.length === -1]) {
+				setCurrentSong(songs[songs.length - 1]);
+				return;
+			}
+			setCurrentSong(songs[(currentIndex - 1) % songs.length]);
+			if (isPlaying) {
+				const promiseSong = audioRef.current?.play();
+				if (promiseSong !== undefined) {
+					promiseSong.then((audio) => {
+						audioRef.current?.play();
+					});
+				}
+			}
+		}
+	};
 	return (
 		<div className="player">
 			<div className="time-control">
@@ -75,13 +138,16 @@ const Player = ({
 				<p>{getTime(songInfo.duration!)}</p>
 			</div>
 			<div className="player-control">
-				<FaAngleLeft size={"32"} />
+				<FaAngleLeft size={"32"} onClick={() => songSkipHandler("skip-back")} />
 				{isPlaying ? (
 					<FaPause size={"32"} onClick={playSongHandler} />
 				) : (
 					<FaPlay size={"32"} onClick={playSongHandler} />
 				)}
-				<FaAngleRight size={"32"} />
+				<FaAngleRight
+					size={"32"}
+					onClick={() => songSkipHandler("skip-next")}
+				/>
 			</div>
 			<audio
 				onTimeUpdate={handleSongTimeUpdate}
