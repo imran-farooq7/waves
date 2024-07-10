@@ -32,6 +32,19 @@ interface Props {
 	}[];
 	songRef: RefObject<HTMLAudioElement> | undefined;
 	setIsPlaying: Dispatch<SetStateAction<boolean>>;
+	setSongs: Dispatch<
+		SetStateAction<
+			{
+				name: string;
+				cover: string;
+				artist: string;
+				audio: string;
+				color: string[];
+				id: string;
+				active: boolean;
+			}[]
+		>
+	>;
 }
 const LibrarySong = ({
 	song,
@@ -39,10 +52,25 @@ const LibrarySong = ({
 	songs,
 	songRef,
 	setIsPlaying,
+	setSongs,
 }: Props) => {
 	const handleSelectedSong = (id: string) => {
 		const selectedSong = songs.filter((s) => s.id === id);
 		setCurrentSong({ ...selectedSong[0] });
+		const newSongs = songs.map((song) => {
+			if (song.id === id) {
+				return {
+					...song,
+					active: true,
+				};
+			} else {
+				return {
+					...song,
+					active: false,
+				};
+			}
+		});
+		setSongs(newSongs);
 		const playPromise = songRef?.current?.play();
 		if (playPromise !== undefined) {
 			playPromise.then((audio) => {
@@ -52,7 +80,10 @@ const LibrarySong = ({
 		}
 	};
 	return (
-		<div className="library-song" onClick={() => handleSelectedSong(song.id)}>
+		<div
+			className={`library-song ${song.active && "active"}`}
+			onClick={() => handleSelectedSong(song.id)}
+		>
 			<img src={song.cover} alt={song.name} />
 			<div>
 				<h3>{song.name}</h3>
