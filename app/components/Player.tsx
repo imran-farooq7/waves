@@ -5,6 +5,7 @@ import {
 	RefObject,
 	SetStateAction,
 	SyntheticEvent,
+	useEffect,
 	useRef,
 	useState,
 } from "react";
@@ -42,6 +43,19 @@ interface Props {
 			active: boolean;
 		}>
 	>;
+	setSongs: Dispatch<
+		SetStateAction<
+			{
+				name: string;
+				cover: string;
+				artist: string;
+				audio: string;
+				color: string[];
+				id: string;
+				active: boolean;
+			}[]
+		>
+	>;
 }
 
 const Player = ({
@@ -51,7 +65,25 @@ const Player = ({
 	setSongRef,
 	songs,
 	setCurrentSong,
+	setSongs,
 }: Props) => {
+	useEffect(() => {
+		const newSongs = songs.map((song) => {
+			if (song.id === currentSong.id) {
+				return {
+					...song,
+					active: true,
+				};
+			} else {
+				return {
+					...song,
+					active: false,
+				};
+			}
+		});
+		setSongs(newSongs);
+	}, [currentSong]);
+
 	const [songInfo, setSongInfo] = useState<{
 		currentTime: number;
 		duration: number;

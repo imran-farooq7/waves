@@ -22,6 +22,7 @@ const Home = () => {
 				setSongRef={setSongRef}
 				songs={songs}
 				setCurrentSong={setCurrentSong}
+				setSongs={setSongs}
 			/>
 			<Library
 				songs={songs}
