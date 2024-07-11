@@ -59,6 +59,7 @@ const Library = ({
 						songRef={songRef}
 						setIsPlaying={setIsPlaying}
 						setSongs={setSongs}
+						key={song.id}
 					/>
 				))}
 			</div>
